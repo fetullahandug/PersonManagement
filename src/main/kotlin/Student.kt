@@ -21,4 +21,5 @@ class Student: Person{
         println("Student-Nr.: $student_id")
         println("Modul: $modul")
     }
+
 }

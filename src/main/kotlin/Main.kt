@@ -6,15 +6,17 @@ fun main(){
     var eingabe_benutzer = 1
 
     database_1.createConnection()
-    database_1.initializeAllStudents(dataManager)
-    database_1.initializeAllLecturers(dataManager)
+    dataManager.initializeAllStudents(database_1)
+    dataManager.initializeAllLecturers(database_1)
 
     do{
-        println("Menü\n__________________________________")
+        println("\n\nMenü\n__________________________________")
         println("1.- Zeige alle Studenten an")
         println("2.- Zeige alle Dozenten an")
-        println("3.- Suche Student")
-        println("4.- Suche Dozent")
+        println("3.- Student einfügen")
+        println("4.- Dozent einfügen")
+        println("5.- Suche Student")
+        println("6.- Suche Dozent")
         println("0.- Beenden")
 
         println("\nEingabe: ")
@@ -29,6 +31,8 @@ fun main(){
             0 -> println("\nDas Programm wird jetzt beendet ..")
             1 -> dataManager.printAllStudents()
             2 -> dataManager.printAllLecturers()
+            3 -> dataManager.createStudent(dataManager, database_1)
+            4 -> dataManager.createLecturer(dataManager, database_1)
             else -> {
                 println("\n\nDu hast eine falsche Eingabe getätigt, bitte versuche es erneut!\n");
             }

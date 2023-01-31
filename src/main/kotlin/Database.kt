@@ -1,9 +1,5 @@
-import java.sql.Connection
-import java.sql.Driver
-import java.sql.DriverManager
-import java.sql.PreparedStatement
-import java.sql.ResultSet
-import java.sql.Statement
+import java.sql.*
+
 
 class Database{
     var host: String
@@ -50,71 +46,6 @@ class Database{
         }
     }
 
-    fun initializeAllStudents(datamanager: DataManager){
-        var sql = "SELECT * from Student"
-        var preparedStatement: PreparedStatement = connection!!.prepareStatement(sql)
-
-        try{
-            var result: ResultSet = preparedStatement.executeQuery()
-
-            while(result.next()){
-                var map_person = getPersonDataById(result.getString("person_id").toInt())
-
-                var new_student = Student(
-                    map_person.get("ID")!!.toInt(),
-                    map_person.get("NAME").toString(),
-                    map_person.get("LAST_NAME").toString(),
-                    map_person.get("ADDRESS").toString(),
-                    map_person.get("POSTCODE")!!.toInt(),
-                    map_person.get("CITY").toString(),
-                    map_person.get("GENDER").toString(),
-                    map_person.get("BIRTHDAY").toString(),
-                    map_person.get("TELEPHONE_NUMBER").toString(),
-                    map_person.get("EMAIL").toString(),
-                    result.getString("id").toInt(),
-                    result.getString("module")
-                )
-                datamanager.students.add(new_student)
-            }
-        }catch(e: Exception){
-            println("Failed on fetching data from Result (Table: Person)")
-            println(e.message)
-        }
-    }
-
-    fun initializeAllLecturers(datamanager: DataManager){
-        var sql = "SELECT * from Lecturer"
-        var preparedStatement: PreparedStatement = connection!!.prepareStatement(sql)
-
-        try{
-            var result: ResultSet = preparedStatement.executeQuery()
-
-            while(result.next()){
-                var map_person = getPersonDataById(result.getString("person_id").toInt())
-
-                var new_lecturer = Lecturer(
-                    map_person.get("ID")!!.toInt(),
-                    map_person.get("NAME").toString(),
-                    map_person.get("LAST_NAME").toString(),
-                    map_person.get("ADDRESS").toString(),
-                    map_person.get("POSTCODE")!!.toInt(),
-                    map_person.get("CITY").toString(),
-                    map_person.get("GENDER").toString(),
-                    map_person.get("BIRTHDAY").toString(),
-                    map_person.get("TELEPHONE_NUMBER").toString(),
-                    map_person.get("EMAIL").toString(),
-                    result.getString("id").toInt(),
-                    result.getString("type").toString(),
-                    result.getString("module").toString()
-                )
-                datamanager.lecturers.add(new_lecturer)
-            }
-        }catch(e: Exception){
-            println("Failed on fetching data from Result (Table: Person)")
-            println(e.message)
-        }
-    }
-
     fun getPersonDataById(id: Int): MutableMap<String, String>{
         var map_person_infos: MutableMap<String, String> = mutableMapOf()
         var sql_person = "SELECT * from Person where id=$id"
@@ -141,9 +72,91 @@ class Database{
         return map_person_infos
     }
 
-    fun insertStudent(name: String, last_name: String, address: String, postcode: Int, city: String, gender: String, birthday: String, telephone_number: String, email: String, modul: String){
-        var sql_person = "Insert into Person values(1, $name, $last_name, $a)"
-        var preparedStatement_person: PreparedStatement = connection!!.prepareStatement(sql_person)
+    fun insertStudent(data_set: MutableMap<String, String>){
+        var preparedStatement_person: PreparedStatement
+        var student_id: Int
+        var sql_person = "Insert into Person(name, lastname, address, postcode, city, gender, birthday, telephone_number, email) values" +
+                "(" +
+                    "'${data_set.get("NAME")}'," +
+                    "'${data_set.get("LAST_NAME")}'," +
+                    "'${data_set.get("ADDRESS")}'," +
+                    "${data_set.get("POSTCODE")}," +
+                    "'${data_set.get("CITY")}'," +
+                    "'${data_set.get("GENDER")}'," +
+                    "'${data_set.get("BIRTHDAY")}'," +
+                    "'${data_set.get("TELEPHONE_NUMBER")}'," +
+                    "'${data_set.get("EMAIL")}'" +
+                ");"
+
+        try{
+            var preparedStatement_person: PreparedStatement = connection!!.prepareStatement(sql_person)
+            var result_insert_person = preparedStatement_person.executeQuery()
+            println("\nSchüler wurde erfolgreich in die Datenbanktabelle Person eingetragen!")
+        }catch(exception: Exception){
+            println("\nEin Fehler ist aufgetreten, der Schüler konnte nicht in die Datenbanktabelle: Person eingefügt werden!")
+            println("Message: ${exception.message}")
+        }
+
+        try{
+            var sql_get_student_id = "Select id from person where name='${data_set.get("NAME")}' and lastname='${data_set.get("LAST_NAME")}' and birthday='${data_set.get("BIRTHDAY")}'"
+            preparedStatement_person = connection!!.prepareStatement(sql_get_student_id)
+            var result_student_id = preparedStatement_person.executeQuery()
+            result_student_id.next()
+            student_id = result_student_id.getString("id").toInt()
+
+            var sql_insert_student_list = "Insert into Student(id, person_id, module) values(null,${student_id},'${data_set.get("MODULE")}')"
+            var preparedStatement_student: PreparedStatement = connection!!.prepareStatement(sql_insert_student_list)
+            var result_insert_student = preparedStatement_student.executeQuery()
+            println("\nSchüler wurde erfolgreich in die Datenbanktabelle: Student eingetragen!")
+        }catch(exception: Exception){
+            println("\nEin Fehler ist aufgetreten, der Schüler konnte nicht in Datenbanktabelle: Student eingefügt werden!")
+            println("Message: ${exception.message}")
+        }
+
+    }
+
+    fun insertLecturer(data_set: MutableMap<String, String>){
+        var preparedStatement_person: PreparedStatement
+        var prepared_statement_lecturer: PreparedStatement
+        var lecturer_id: Int
+        var sql_person = "Insert into Person(name, lastname, address, postcode, city, gender, birthday, telephone_number, email) values" +
+                "(" +
+                "'${data_set.get("NAME")}'," +
+                "'${data_set.get("LAST_NAME")}'," +
+                "'${data_set.get("ADDRESS")}'," +
+                "${data_set.get("POSTCODE")}," +
+                "'${data_set.get("CITY")}'," +
+                "'${data_set.get("GENDER")}'," +
+                "'${data_set.get("BIRTHDAY")}'," +
+                "'${data_set.get("TELEPHONE_NUMBER")}'," +
+                "'${data_set.get("EMAIL")}'" +
+                ");"
+
+        try{
+            var preparedStatement_person: PreparedStatement = connection!!.prepareStatement(sql_person)
+            var result_insert_person = preparedStatement_person.executeQuery()
+            println("\nDozent wurde erfolgreich in die Datenbanktabelle Person eingetragen!")
+        }catch(exception: Exception){
+            println("\nEin Fehler ist aufgetreten, der Dozent konnte nicht in die Datenbanktabelle: Person eingefügt werden!")
+            println("Message: ${exception.message}")
+        }
+
+        try{
+            var sql_get_lecturer_id = "Select id from person where name='${data_set.get("NAME")}' and lastname='${data_set.get("LAST_NAME")}' and birthday='${data_set.get("BIRTHDAY")}'"
+            prepared_statement_lecturer = connection!!.prepareStatement(sql_get_lecturer_id)
+            var result_lecturer_id = prepared_statement_lecturer.executeQuery()
+            result_lecturer_id.next()
+            lecturer_id = result_lecturer_id.getString("id").toInt()
+
+            var sql_insert_lecturer_list = "Insert into Lecturer(id, person_id, type, module) values(null,$lecturer_id,'${data_set.get("TYPE")}','${data_set.get("MODULE")}')"
+            var preparedStatement_student: PreparedStatement = connection!!.prepareStatement(sql_insert_lecturer_list)
+            var result_insert_lecturer = preparedStatement_student.executeQuery()
+            println("\nDozent wurde erfolgreich in die Datenbanktabelle: Dozent eingetragen!")
+        }catch(exception: Exception){
+            println("\nEin Fehler ist aufgetreten, der Dozent konnte nicht in Datenbanktabelle: Dozent eingefügt werden!")
+            println("Message: ${exception.message}")
+        }
+
     }
 
     fun closeConnection(){
