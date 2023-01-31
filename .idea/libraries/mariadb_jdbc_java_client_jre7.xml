@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="mariadb.jdbc.java.client.jre7" type="repository">
+    <properties maven-id="org.mariadb.jdbc:mariadb-java-client-jre7:1.6.1" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/mariadb/jdbc/mariadb-java-client-jre7/1.6.1/mariadb-java-client-jre7-1.6.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
