@@ -9,19 +9,25 @@ class Lecturer: Person{
         this.modul = modul
     }
 
-    fun printLecturer(){
-        println()
-        println("Name: ${super.name}")
-        println("Nachname: ${super.last_name}")
-        println("Adresse: ${super.address}")
-        println("Postleitzahl: ${super.postcode}")
-        println("Ort: ${super.city}")
-        println("Geschlecht: ${super.gender}")
-        println("Geburtsdatum: ${super.birthday}")
-        println("Telefonnummer: ${super.telephone_number}")
-        println("Email: ${super.email}")
-        println("Dozent-Nr.: $lecturer_id")
-        println("Dozent-Typ: $type")
-        println("Modul: $modul")
+    fun printLecturer(counter: Int){
+        println("$counter   |  ${spaceGenerator(name, false)}|  ${spaceGenerator(last_name, false)}|  ${spaceGenerator(address, false)}|  ${spaceGenerator(postcode.toString(), false)}|  ${spaceGenerator(city, false)}|  ${spaceGenerator(gender, false)}|  ${spaceGenerator(birthday, false)}|  ${spaceGenerator(telephone_number, false)}|  ${spaceGenerator(email, true)}|  ${spaceGenerator(lecturer_id.toString(), false)}|  ${spaceGenerator(type, false)}|  ${spaceGenerator(modul, false)}")
+    }
+
+    fun spaceGenerator(label: String, long: Boolean): String{
+        val space = " "
+        var newLabel = label
+        val difference = 25 - label.length
+
+        if(difference > 0){
+            for(i in 1..difference){
+                newLabel += space
+            }
+        }
+
+        if(long){
+            newLabel += "          "
+        }
+
+        return newLabel
     }
 }
